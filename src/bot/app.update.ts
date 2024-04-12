@@ -10,42 +10,15 @@ import {
 } from 'nestjs-telegraf';
 import { actionButtons } from './app.buttons';
 import { Context } from './context.interface';
-import { showList } from './app.utils';
-
-const dataGoods = [
-  {
-    id: 1,
-    name: 'Ворсовый коврик Mitsubishi Lanser',
-    count: 1000,
-    price: 2300,
-    color: 'черный красный',
-    category: 'ворс',
-    visibility: true,
-  },
-  {
-    id: 2,
-    name: 'Ворсовый коврик Mitsubishi Lanser',
-    count: 1000,
-    price: 2300,
-    color: 'черный белый',
-    category: 'alkanatara',
-    visibility: false,
-  },
-  {
-    id: 3,
-    name: 'Ворсовый коврик Mitsubishi Lanser',
-    count: 1000,
-    price: 2300,
-    color: 'черынй серый',
-    category: 'ворс',
-    visibility: true,
-  },
-];
+//import { showList } from './app.utils';
+import { PrismaService } from 'src/prisma.service';
+import { Product } from 'src/product/product.model';
 
 @Update()
 export class AppUpdate {
   constructor(
-    @InjectBot() private readonly bot: Telegraf<Context>
+    @InjectBot() private readonly bot: Telegraf<Context>,
+    private readonly prisma: PrismaService,
   ) {}
 
   @Start()
@@ -56,17 +29,33 @@ export class AppUpdate {
 
   @Hears('Список товаров')
   async getAll(ctx: Context) {
-    const visibleGoods = dataGoods.filter((good) => good.visibility === true);
+    const products = await this.prisma.product.findMany();
+    console.log(products);
 
-    const visibleGoodNames = visibleGoods.map((good) => good.name);
+    const productsDetails = products.map((product, key) => {
+      return `${key}) ${product.name}\nЦвет: ${product.color}\nЦена: ${product.price}\nКоличество: ${product.count}\nПродается: ${product.visibility ? 'да' : 'нет'}\n`;
+    });
 
-    await ctx.reply(`Список товаров:\n${visibleGoodNames.join('\n')}`);
+    await ctx.reply(`${productsDetails.join('\n')}`);
   }
 
   @Hears('Категории товаров')
   async getAllCategory(ctx: Context) {
-    const categories = showList(dataGoods);
-    await ctx.reply(`Список категорий товаров:\n${categories.join('\n')}`);
+    const products = await this.prisma.product.findMany();
+
+    const productsDetails = [];
+    const uniqueCategories = new Set();
+
+    products.forEach((product, key) => {
+      if (!uniqueCategories.has(product.category)) {
+        productsDetails.push(`${key}) ${product.category}`);
+        uniqueCategories.add(product.category);
+      }
+    });
+
+    await ctx.reply(
+      `Список категорий товаров:\n\n${productsDetails.join('\n')}`,
+    );
   }
 
   @Hears('Отредактировать')
@@ -82,31 +71,23 @@ export class AppUpdate {
   }
 
   @On('text')
-  async getMessage(@Message('text') message: string, @Ctx() ctx: Context) {
+  async getMessage(@Message('text') message: string, @Ctx() ctx: Context): Promise<Product | null> {
     if (!ctx.session.type) return;
-//TODO доделать утилс и нормально реализовать функции
-//TODO сделать редактирование (уже с бд)
+    //TODO доделать утилс и нормально реализовать функции
+    //TODO добить редактирование
     if (ctx.session.type === 'edit') {
-      const goods = dataGoods.find((mes) => mes.name === message);
-      if (!goods) {
+      const products = await this.prisma.product.findFirst({ where: { name: message } })
+      if (!products) {
         await ctx.reply('Товара с таким названием не найдено');
         return;
       }
       await ctx.reply(
-        `Это нужный товар?\n\n-${goods.name}\n-Цвет: ${goods.color}\n-Цена: ${goods.price}\n-Кол-во: ${goods.count}\n-Продается: ${goods.visibility ? `да` : `нет`} `,
+        `Это нужный товар?\n\n-${products.name}\n-Цвет: ${products.color}\n-Цена: ${products.price}\n-Кол-во: ${products.count}\n-Продается: ${products.visibility ? `да` : `нет`} `,
       );
     }
-//TODO сделать удаление (уже с бд)
+    //TODO сделать удаление (уже с бд)
     if (ctx.session.type === 'remove') {
-      const goods = dataGoods.find((mes) => mes.name === message);
-      if (!goods) {
-        await ctx.reply('Товара с таким названием не найдено');
-        return;
-      }
-      await ctx.reply(
-        `Это нужный товар?\n\n-${goods.name}\n-Цвет: ${goods.color}\n-Цена: ${goods.price}\n-Кол-во: ${goods.count}\n-Продается: ${goods.visibility ? `да` : `нет`} `,
-      );
+
     }
   }
-  
 }

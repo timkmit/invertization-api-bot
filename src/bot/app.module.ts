@@ -3,6 +3,7 @@ import { AppUpdate } from './app.update';
 import { TelegrafModule } from 'nestjs-telegraf';
 import * as LocalSession from 'telegraf-session-local';
 import { ProductModule } from '../product/product.module';
+import { PrismaService } from 'src/prisma.service';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
 //TODO add .env
@@ -12,9 +13,9 @@ const sessions = new LocalSession({ database: 'session_db.json' });
       middlewares: [sessions.middleware()],
       token: '7082382955:AAFR4KwRh2LW0OBsEcYzOlLgnQFxZ685yao',
     }),
-    ProductModule
+    ProductModule,
   ],
   controllers: [],
-  providers: [AppUpdate],
+  providers: [AppUpdate, PrismaService],
 })
 export class AppModule {}
