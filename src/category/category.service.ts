@@ -12,4 +12,8 @@ export class CategoryService {
   async getById(ids: number[]) {
     return await this.prisma.category.findMany({ where: { id: { in: ids } } });
   }
+
+  async create(name: string) {
+    return await this.prisma.category.create({ data: { name } });
+  }
 }

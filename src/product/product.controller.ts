@@ -8,11 +8,17 @@ import {
   Param,
   Post,
   Put,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { CreateProductDto } from './dto/CreateProductDto';
 
 @Controller('api/product')
 export class ProductController {
-  constructor(private readonly productServise: ProductService) {}
+  constructor(
+    private readonly productServise: ProductService,
+  ) {}
 
   @Get()
   async getAllProducts(): Promise<Product[]> {
@@ -20,8 +26,11 @@ export class ProductController {
   }
 
   @Post()
-  async postProduct(@Body() postData: Product): Promise<Product> {
-    return this.productServise.createProduct(postData);
+  @UseInterceptors(AnyFilesInterceptor())
+  async postProduct(@UploadedFiles() files: Array<Express.Multer.File>, @Body() postData: CreateProductDto): Promise<Product> {
+    console.log('Rofl')
+    console.log(postData, files)
+    return this.productServise.createProduct(postData, files);
   }
 
   @Get(':id')

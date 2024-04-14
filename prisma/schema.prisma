@@ -22,11 +22,16 @@ model Product {
   category   Category @relation(fields: [category_id], references: [id])
   visibility Boolean
   category_id Int
+  images String[]
+
+  @@map("product")
 }
 
 model Category {
   id      Int       @id @unique @default(autoincrement())
   name    String
   Product Product[]
+
+  @@map("category")
 }
 

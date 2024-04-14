@@ -6,6 +6,9 @@ import { ProductModule } from '../product/product.module';
 import { PrismaService } from 'src/prisma.service';
 import { CategoryModule } from 'src/category/category.module';
 import { CategoryService } from 'src/category/category.service';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ImagesModule } from 'src/images/images.module';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
 //TODO add .env
@@ -15,8 +18,13 @@ const sessions = new LocalSession({ database: 'session_db.json' });
       middlewares: [sessions.middleware()],
       token: process.env.TG_BOT_TOKEN,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public'),
+    }),
+    
+    ImagesModule,
     ProductModule,
-    CategoryModule
+    CategoryModule,
   ],
   controllers: [],
   providers: [AppUpdate, PrismaService, CategoryService],
