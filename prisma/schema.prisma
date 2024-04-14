@@ -14,11 +14,19 @@ datasource db {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  count     Int
-  price     Int
-  color     String
-  category  String
+  id         Int      @id @unique @default(autoincrement())
+  name       String
+  count      Int
+  price      Int
+  color      String
+  category   Category @relation(fields: [category_id], references: [id])
   visibility Boolean
+  category_id Int
 }
+
+model Category {
+  id      Int       @id @unique @default(autoincrement())
+  name    String
+  Product Product[]
+}
+

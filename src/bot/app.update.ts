@@ -12,13 +12,15 @@ import { actionButtons } from './app.buttons';
 import { Context } from './context.interface';
 //import { showList } from './app.utils';
 import { PrismaService } from 'src/prisma.service';
-import { Product } from 'src/product/product.model';
+import { Product } from '@prisma/client';
+import { CategoryService } from '../category/category.service';
 
 @Update()
 export class AppUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly prisma: PrismaService,
+    private readonly categoryService: CategoryService,
   ) {}
 
   @Start()
@@ -41,20 +43,10 @@ export class AppUpdate {
 
   @Hears('Категории товаров')
   async getAllCategory(ctx: Context) {
-    const products = await this.prisma.product.findMany();
-
-    const productsDetails = [];
-    const uniqueCategories = new Set();
-
-    products.forEach((product, key) => {
-      if (!uniqueCategories.has(product.category)) {
-        productsDetails.push(`${key}) ${product.category}`);
-        uniqueCategories.add(product.category);
-      }
-    });
+    const categories = await this.categoryService.getAll();
 
     await ctx.reply(
-      `Список категорий товаров:\n\n${productsDetails.join('\n')}`,
+      `Список категорий товаров:\n\n${categories.map(({ name }, i) => `${i + 1}) ${name}`).join('\n')}`,
     );
   }
 
@@ -71,12 +63,17 @@ export class AppUpdate {
   }
 
   @On('text')
-  async getMessage(@Message('text') message: string, @Ctx() ctx: Context): Promise<Product | null> {
+  async getMessage(
+    @Message('text') message: string,
+    @Ctx() ctx: Context,
+  ): Promise<Product | null> {
     if (!ctx.session.type) return;
     //TODO доделать утилс и нормально реализовать функции
     //TODO добить редактирование
     if (ctx.session.type === 'edit') {
-      const products = await this.prisma.product.findFirst({ where: { name: message } })
+      const products = await this.prisma.product.findFirst({
+        where: { name: message },
+      });
       if (!products) {
         await ctx.reply('Товара с таким названием не найдено');
         return;
@@ -87,7 +84,6 @@ export class AppUpdate {
     }
     //TODO сделать удаление (уже с бд)
     if (ctx.session.type === 'remove') {
-
     }
   }
 }

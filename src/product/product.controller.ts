@@ -1,5 +1,5 @@
 import { Product } from '@prisma/client';
-import { ProductServise } from './product.service';
+import { ProductService } from './product.service';
 import {
   Body,
   Controller,
@@ -12,7 +12,7 @@ import {
 
 @Controller('api/product')
 export class ProductController {
-  constructor(private readonly productServise: ProductServise) {}
+  constructor(private readonly productServise: ProductService) {}
 
   @Get()
   async getAllProducts(): Promise<Product[]> {
