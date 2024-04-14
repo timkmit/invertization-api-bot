@@ -7,7 +7,7 @@ export class ProductService {
   constructor(private prisma: PrismaService) {}
 
   async getAllProducts(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+    return this.prisma.product.findMany({ where: { visibility: true } });
   }
 
   async getProduct(id: number): Promise<Product | null> {
