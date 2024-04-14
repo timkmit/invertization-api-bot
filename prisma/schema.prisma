@@ -23,6 +23,7 @@ model Product {
   visibility Boolean
   category_id Int
   images String[]
+  year Int
 
   @@map("product")
 }

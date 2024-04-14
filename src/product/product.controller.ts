@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,31 +17,47 @@ import { CreateProductDto } from './dto/CreateProductDto';
 
 @Controller('api/product')
 export class ProductController {
-  constructor(
-    private readonly productServise: ProductService,
-  ) {}
+  constructor(private readonly productService: ProductService) {}
 
   @Get()
   async getAllProducts(): Promise<Product[]> {
-    return this.productServise.getAllProducts();
+    return this.productService.getAllProducts();
   }
 
-  @Post()
-  @UseInterceptors(AnyFilesInterceptor())
-  async postProduct(@UploadedFiles() files: Array<Express.Multer.File>, @Body() postData: CreateProductDto): Promise<Product> {
-    console.log('Rofl')
-    console.log(postData, files)
-    return this.productServise.createProduct(postData, files);
+  @Get('/search')
+  async getProductByDetails(
+    @Query('categories') category_ids: string,
+    @Query('colors') colors: string,
+    @Query('years') years: string,
+    @Query('price') price: string,
+    @Query('count') count: string,
+  ) {
+    return await this.productService.getProductByDetails(
+      category_ids,
+      colors,
+      years,
+      price,
+      count,
+    );
   }
 
   @Get(':id')
   async getProduct(@Param('id') id: number): Promise<Product | null> {
-    return this.productServise.getProduct(id);
+    return this.productService.getProduct(id);
+  }
+
+  @Post()
+  @UseInterceptors(AnyFilesInterceptor())
+  async postProduct(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() postData: CreateProductDto,
+  ): Promise<Product> {
+    return this.productService.createProduct(postData, files);
   }
 
   @Delete(':id')
   async deleteProduct(@Param('id') id: number): Promise<Product> {
-    return this.productServise.deleteProduct(id);
+    return this.productService.deleteProduct(id);
   }
 
   @Put(':id')
@@ -48,6 +65,12 @@ export class ProductController {
     @Param('id') id: number,
     @Body() postData: Product,
   ): Promise<Product> {
-    return this.productServise.updateProduct(id, postData);
+    return this.productService.updateProduct(id, postData);
+  }
+
+  @Get('/generate/:num')
+  async generateRandomDB(@Param('num') num: string) {
+    const generateNum = Number(num);
+    return await this.productService.generateRandomDB(generateNum);
   }
 }
