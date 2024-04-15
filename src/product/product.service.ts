@@ -16,7 +16,19 @@ export class ProductService {
   }
 
   async getProduct(id: number): Promise<Product | null> {
-    return this.prisma.product.findUnique({ where: { id: Number(id) } });
+    return this.prisma.product.findUnique({
+      where: { id: Number(id), visibility: true },
+      include: { category: true },
+    });
+  }
+
+  async getColors(category_ids: number[]) {
+    const products = await this.prisma.product.findMany({
+      where: { category_id: { in: category_ids }, visibility: true },
+      include: { category: true },
+    });
+
+    return new Set(products.map((product) => product.color));
   }
 
   async getProductByDetails(
@@ -52,6 +64,16 @@ export class ProductService {
         count: countData,
         price: priceData,
         year: yearsData,
+        visibility: true,
+      },
+      include: { category: true },
+    });
+  }
+
+  getByNameId(query: string) {
+    return this.prisma.product.findMany({
+      where: {
+        OR: [{ id: { equals: isNaN(Number(query)) ? 0 : Number(query) } }, { name: { contains: query } }],
       },
     });
   }
@@ -73,9 +95,9 @@ export class ProductService {
         name: productToSave.name,
         price: Number(productToSave.price),
         visibility: productToSave.visibility === 'true',
-        category_id: Number(productToSave.category_id),
         images: fileNames,
         year: Number(productToSave.year),
+        category: { connect: { id: Number(productToSave.category_id) } },
       },
     });
   }
@@ -83,7 +105,7 @@ export class ProductService {
   async updateProduct(id: number, data: Product): Promise<Product> {
     return this.prisma.product.update({
       where: { id: Number(id) },
-      data,
+      data: data,
     });
   }
 
@@ -112,7 +134,7 @@ export class ProductService {
           visibility: true,
           year: getRandomInt(2000, 2024),
           category_id: getRandomInt(1, 4),
-          images: [],
+          images: ['generated.png'],
         },
       });
     }

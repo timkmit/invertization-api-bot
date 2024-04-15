@@ -6,7 +6,7 @@ export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
   async getAll() {
-    return await this.prisma.category.findMany();
+    return await this.prisma.category.findMany({include: {Product: true}});
   }
 
   async getById(ids: number[]) {

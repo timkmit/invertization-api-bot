@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf';
+import { Markup, Telegraf } from 'telegraf';
 import {
   Ctx,
   Hears,
@@ -22,6 +22,28 @@ export class AppUpdate {
     private readonly prisma: PrismaService,
     private readonly categoryService: CategoryService,
   ) {}
+
+  // УДАЛИТЬ DELETE
+  @Hears('WebApp')
+  async startWebApp(ctx: Context) {
+    await ctx.reply(
+      'Debug Reply',
+      Markup.keyboard([
+        Markup.button.webApp(
+          '/search/process',
+          'https://subtle-chimera-51b2eb.netlify.app/search/process',
+        ),
+        Markup.button.webApp(
+          '/add',
+          'https://subtle-chimera-51b2eb.netlify.app/add',
+        ),
+        Markup.button.webApp(
+          '/search/byid',
+          'https://subtle-chimera-51b2eb.netlify.app/search/byid',
+        ),
+      ]),
+    );
+  }
 
   @Start()
   async startCommand(ctx: Context) {
