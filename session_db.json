@@ -3,14 +3,10 @@
     {
       "id": "418777193:418777193",
       "data": {
-        "__scenes": {},
-        "type": "edit"
-      }
-    },
-    {
-      "id": "942583043:942583043",
-      "data": {
-        "__scenes": {}
+        "__scenes": {
+          "current": "greetengscene",
+          "state": {}
+        }
       }
     }
   ]

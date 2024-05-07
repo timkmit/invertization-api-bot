@@ -1,5 +1,6 @@
 import { Markup, Telegraf } from 'telegraf';
 import {
+  Command,
   Ctx,
   Hears,
   InjectBot,
@@ -9,11 +10,12 @@ import {
   Update,
 } from 'nestjs-telegraf';
 import { actionButtons } from './app.buttons';
-import { Context } from './context.interface';
+import { Context, Context2 } from './context.interface';
 //import { showList } from './app.utils';
 import { PrismaService } from 'src/prisma.service';
 import { Product } from '@prisma/client';
 import { CategoryService } from '../category/category.service';
+
 
 @Update()
 export class AppUpdate {
@@ -45,67 +47,59 @@ export class AppUpdate {
     );
   }
 
+
   @Start()
-  async startCommand(ctx: Context) {
-    await ctx.reply('ggagagaga');
-    await ctx.reply('выбери', actionButtons());
+  @Command('scene')
+  async onSceneCommand(ctx : Context2): Promise<void>{
+    await ctx.reply('переход на сцену');
+    await ctx.scene.enter('greetengscene')
   }
 
-  @Hears('Список товаров')
-  async getAll(ctx: Context) {
-    const products = await this.prisma.product.findMany();
-    console.log(products);
-
-    const productsDetails = products.map((product, key) => {
-      return `${key}) ${product.name}\nЦвет: ${product.color}\nЦена: ${product.price}\nКоличество: ${product.count}\nПродается: ${product.visibility ? 'да' : 'нет'}\n`;
-    });
-
-    await ctx.reply(`${productsDetails.join('\n')}`);
+  @Command('info_product_scene')
+  async onInfoSceneCommand(ctx : Context2): Promise<void>{
+    await ctx.reply('переход на сцену info');
+    await ctx.scene.enter('info_product_scene')
   }
 
-  @Hears('Категории товаров')
-  async getAllCategory(ctx: Context) {
-    const categories = await this.categoryService.getAll();
-
-    await ctx.reply(
-      `Список категорий товаров:\n\n${categories.map(({ name }, i) => `${i + 1}) ${name}`).join('\n')}`,
-    );
+  @Command('add_product_scene')
+  async onAddSceneCommand(ctx : Context2): Promise<void>{
+    await ctx.reply('переход на сцену');
+    await ctx.scene.enter('add_product_scene')
   }
 
-  @Hears('Отредактировать')
-  async editGood(ctx: Context) {
-    await ctx.reply('Напиши название и цвет товара');
-    ctx.session.type = 'edit';
+  @Command('edit_product_scene')
+  async onEditSceneCommand(ctx : Context2): Promise<void>{
+    await ctx.reply('переход на сцену');
+    await ctx.scene.enter('Enter to edit_product_scene')
+  }
+  @Command('delete_product_scene')
+  async onDeleteSceneCommand(ctx : Context2): Promise<void>{
+    await ctx.reply('переход на сцену');
+    await ctx.scene.enter('delete_product_scene')
   }
 
-  @Hears('Удалить')
-  async removeGood(ctx: Context) {
-    await ctx.reply('Напиши название и цвет товара');
-    ctx.session.type = 'remove';
-  }
-
-  @On('text')
-  async getMessage(
-    @Message('text') message: string,
-    @Ctx() ctx: Context,
-  ): Promise<Product | null> {
-    if (!ctx.session.type) return;
-    //TODO доделать утилс и нормально реализовать функции
-    //TODO добить редактирование
-    if (ctx.session.type === 'edit') {
-      const products = await this.prisma.product.findFirst({
-        where: { name: message },
-      });
-      if (!products) {
-        await ctx.reply('Товара с таким названием не найдено');
-        return;
-      }
-      await ctx.reply(
-        `Это нужный товар?\n\n-${products.name}\n-Цвет: ${products.color}\n-Цена: ${products.price}\n-Кол-во: ${products.count}\n-Продается: ${products.visibility ? `да` : `нет`} `,
-      );
-    }
-    //TODO сделать удаление (уже с бд)
-    if (ctx.session.type === 'remove') {
-    }
-  }
+  // @On('text')
+  // async getMessage(
+  //   @Message('text') message: string,
+  //   @Ctx() ctx: Context,
+  // ): Promise<Product | null> {
+  //   if (!ctx.session.type) return;
+  //   //TODO доделать утилс и нормально реализовать функции
+  //   //TODO добить редактирование
+  //   if (ctx.session.type === 'edit') {
+  //     const products = await this.prisma.product.findFirst({
+  //       where: { name: message },
+  //     });
+  //     if (!products) {
+  //       await ctx.reply('Товара с таким названием не найдено');
+  //       return;
+  //     }
+  //     await ctx.reply(
+  //       `Это нужный товар?\n\n-${products.name}\n-Цвет: ${products.color}\n-Цена: ${products.price}\n-Кол-во: ${products.count}\n-Продается: ${products.visibility ? `да` : `нет`} `,
+  //     );
+  //   }
+  //   //TODO сделать удаление (уже с бд)
+  //   if (ctx.session.type === 'remove') {
+  //   }
+  // }
 }

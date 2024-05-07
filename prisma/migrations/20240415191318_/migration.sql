@@ -1,19 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Category` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Product` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Product" DROP CONSTRAINT "Product_category_id_fkey";
-
--- DropTable
-DROP TABLE "Category";
-
--- DropTable
-DROP TABLE "Product";
-
 -- CreateTable
 CREATE TABLE "product" (
     "id" SERIAL NOT NULL,
@@ -24,6 +8,7 @@ CREATE TABLE "product" (
     "visibility" BOOLEAN NOT NULL,
     "category_id" INTEGER NOT NULL,
     "images" TEXT[],
+    "year" INTEGER NOT NULL,
 
     CONSTRAINT "product_pkey" PRIMARY KEY ("id")
 );
