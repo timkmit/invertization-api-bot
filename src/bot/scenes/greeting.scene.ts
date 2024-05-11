@@ -1,13 +1,13 @@
 import { Scene, SceneEnter, SceneLeave, Hears } from 'nestjs-telegraf';
-import { Context, Context2 } from '../context.interface';
+import { Context2 } from '../context.interface';
 
 
-@Scene('greetengscene')
-export class RandomNumberScene {
+@Scene('greeting_scene')
+export class GreetingScene {
   @SceneEnter()
   onSceneEnter(): string {
-    console.log('Enter to greetengscene');
-    return 'Welcome братишка greetengscene';
+    console.log('Enter to greetingscene');
+    return 'Welcome братишка greetingscene';
   }
 
   @Hears('leave')

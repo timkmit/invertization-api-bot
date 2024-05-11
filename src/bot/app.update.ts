@@ -1,58 +1,41 @@
-import { Markup, Telegraf } from 'telegraf';
+import { Telegraf } from 'telegraf';
 import {
   Command,
-  Ctx,
-  Hears,
   InjectBot,
-  Message,
-  On,
   Start,
   Update,
 } from 'nestjs-telegraf';
-import { actionButtons } from './app.buttons';
-import { Context, Context2 } from './context.interface';
-//import { showList } from './app.utils';
-import { PrismaService } from 'src/prisma.service';
-import { Product } from '@prisma/client';
-import { CategoryService } from '../category/category.service';
+import { Context, 
+  Context2 } from './context.interface';
+import { isAllowedToEnterScene } from './app.utils';
+// import { PrismaService } from 'src/prisma.service';
+// import { CategoryService } from '../category/category.service';
 
+const userId = 0;
 
 @Update()
 export class AppUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
-    private readonly prisma: PrismaService,
-    private readonly categoryService: CategoryService,
+    // private readonly prisma: PrismaService,
+    // private readonly categoryService: CategoryService,
   ) {}
-
-  // УДАЛИТЬ DELETE
-  @Hears('WebApp')
-  async startWebApp(ctx: Context) {
-    await ctx.reply(
-      'Debug Reply',
-      Markup.keyboard([
-        Markup.button.webApp(
-          '/search/process',
-          'https://subtle-chimera-51b2eb.netlify.app/search/process',
-        ),
-        Markup.button.webApp(
-          '/add',
-          'https://subtle-chimera-51b2eb.netlify.app/add',
-        ),
-        Markup.button.webApp(
-          '/search/byid',
-          'https://subtle-chimera-51b2eb.netlify.app/search/byid',
-        ),
-      ]),
-    );
-  }
-
 
   @Start()
   @Command('scene')
   async onSceneCommand(ctx : Context2): Promise<void>{
     await ctx.reply('переход на сцену');
-    await ctx.scene.enter('greetengscene')
+    await ctx.scene.enter('greeting_scene')
+  }
+
+  @Command('webapp_scene')
+  async onWebAppCommand(ctx : Context2): Promise<void>{
+
+    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
+      await ctx.reply('переход на сцену info');
+      await ctx.scene.enter('webapp_scene')
+    }
+
   }
 
   @Command('info_product_scene')
@@ -74,8 +57,12 @@ export class AppUpdate {
   }
   @Command('delete_product_scene')
   async onDeleteSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.reply('переход на сцену');
-    await ctx.scene.enter('delete_product_scene')
+
+    if(isAllowedToEnterScene('delete_product_scene', ctx.message.chat.id.toString())){
+      await ctx.reply('переход на сцену info');
+      await ctx.scene.enter('webapp_scene')
+    }
+
   }
 
   // @On('text')
