@@ -11,7 +11,6 @@ import { isAllowedToEnterScene } from './app.utils';
 // import { PrismaService } from 'src/prisma.service';
 // import { CategoryService } from '../category/category.service';
 
-const userId = 0;
 
 @Update()
 export class AppUpdate {
@@ -32,7 +31,7 @@ export class AppUpdate {
   async onWebAppCommand(ctx : Context2): Promise<void>{
 
     if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену info');
+      await ctx.reply('переход на сцену webapp_scene');
       await ctx.scene.enter('webapp_scene')
     }
 
@@ -40,27 +39,39 @@ export class AppUpdate {
 
   @Command('info_product_scene')
   async onInfoSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.reply('переход на сцену info');
-    await ctx.scene.enter('info_product_scene')
+
+    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
+      await ctx.reply('переход на сцену info_product_scene');
+      await ctx.scene.enter('info_product_scene')
+    }
   }
 
   @Command('add_product_scene')
   async onAddSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.reply('переход на сцену');
-    await ctx.scene.enter('add_product_scene')
+
+    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
+      await ctx.reply('переход на сцену add_product_scene');
+      await ctx.scene.enter('add_product_scene')
+    }
+
   }
 
   @Command('edit_product_scene')
   async onEditSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.reply('переход на сцену');
-    await ctx.scene.enter('Enter to edit_product_scene')
+
+    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
+      await ctx.reply('переход на сцену edit_product_scenee');
+      await ctx.scene.enter('edit_product_scene')
+    }
+
   }
+
   @Command('delete_product_scene')
   async onDeleteSceneCommand(ctx : Context2): Promise<void>{
 
     if(isAllowedToEnterScene('delete_product_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену info');
-      await ctx.scene.enter('webapp_scene')
+      await ctx.reply('переход на сцену delete_product_scene');
+      await ctx.scene.enter('delete_product_scene')
     }
 
   }
