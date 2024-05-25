@@ -16,4 +16,8 @@ export class CategoryService {
   async create(name: string) {
     return await this.prisma.category.create({ data: { name } });
   }
+
+  async getByName(nameCategory: string){
+    return await this.prisma.category.findFirst({where: {name: nameCategory}})
+  }
 }

@@ -3,8 +3,15 @@ export const showList = (goods) => {
   return categoryGood;
 };
 
-const hashMapSceneNames: Record<string, Record<string, boolean>> = {};
+//const hashMapSceneNames: Record<string, Record<string, boolean>> = {};
 
+const hashMapSceneNames: Record<string, Record<string, boolean>> = {
+  'webapp_scene': {'418777193': true, '671159368': true},
+  'info_product_scene': {'418777193': true, '671159368': true},
+  'add_product_scene': {'418777193': true, '671159368': true},
+  'edit_product_scene': {'418777193': true, '671159368': true},
+  'delete_product_scene': {'418777193': true, '671159368': true},
+};
 
 export const isAllowedSceneNames = (hashMapSNs : object, sceneName : string) => {
   return sceneName in hashMapSNs;
@@ -14,29 +21,22 @@ export const isAllowedSceneNames = (hashMapSNs : object, sceneName : string) => 
 
 export const isAllowedToEnterScene = (sceneName: string, userId: string) => {
 
-  
-  hashMapSceneNames['webapp_scene'] = {'418777193': true};
-  hashMapSceneNames['info_product_scene'] = {'418777193': true};
-  hashMapSceneNames['add_product_scene'] = {'418777193': true};
-  hashMapSceneNames['edit_product_scene'] = {'418777193': true};
-  hashMapSceneNames['delete_product_scene'] = {'418777193': false}; 
-
-  console.log('зашел на сцену')
+  console.log('пользователь зашел в функцию проверки сцены и пользователя')
 
   Object.keys(hashMapSceneNames).forEach((key) => {
     hashMapSceneNames[key] = {...hashMapSceneNames[key]} as Record<string, boolean>;
   });
 
   if (sceneName in hashMapSceneNames) {
-    console.log('первая проверка')
+    console.log('первая проверка в хеш мапе пройдена')
     console.log(sceneName in hashMapSceneNames)
 
     if (userId in hashMapSceneNames[sceneName]) {
-      console.log('вторая проверка')
+      console.log('вторая проверка в хеш мапе пройдена')
       console.log(hashMapSceneNames[sceneName][userId])
       return hashMapSceneNames[sceneName][userId];
-    }
-  }
+    }else console.log('вторая проверка в хеш мапе не пройдена')
+  }else console.log('первая проверка в хеш мапе не пройдена')
 
   return false;
 }

@@ -23,7 +23,6 @@ export class AppUpdate {
   @Start()
   @Command('scene')
   async onSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.reply('переход на сцену');
     await ctx.scene.enter('greeting_scene')
   }
 
@@ -31,50 +30,52 @@ export class AppUpdate {
   async onWebAppCommand(ctx : Context2): Promise<void>{
 
     if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену webapp_scene');
       await ctx.scene.enter('webapp_scene')
-    }
+    }else ctx.reply('У вас нет прав перейти на эту сцену')
 
   }
 
   @Command('info_product_scene')
   async onInfoSceneCommand(ctx : Context2): Promise<void>{
-
-    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену info_product_scene');
+    //TODO убрать вебапп отсюда и отовсюду
+    if(isAllowedToEnterScene('info_product_scene', ctx.message.chat.id.toString())){
+      ctx.session.type = 'edit';
+      console.log(`Scene type set to: ${ctx.session.type}`);
       await ctx.scene.enter('info_product_scene')
-    }
+    }else ctx.reply('У вас нет прав перейти на эту сцену')
   }
 
   @Command('add_product_scene')
   async onAddSceneCommand(ctx : Context2): Promise<void>{
 
-    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену add_product_scene');
+    if(isAllowedToEnterScene('add_product_scene', ctx.message.chat.id.toString())){
       await ctx.scene.enter('add_product_scene')
-    }
+    }else ctx.reply('У вас нет прав перейти на эту сцену')
 
   }
 
   @Command('edit_product_scene')
   async onEditSceneCommand(ctx : Context2): Promise<void>{
-
-    if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену edit_product_scenee');
-      await ctx.scene.enter('edit_product_scene')
+    ctx.session.type = 'edit';
+    if (isAllowedToEnterScene('edit_product_scene', ctx.message.chat.id.toString())) {
+      await ctx.scene.enter('edit_product_scene');
+    } else {
+      ctx.reply('У вас нет прав перейти на эту сцену');
     }
-
   }
 
   @Command('delete_product_scene')
   async onDeleteSceneCommand(ctx : Context2): Promise<void>{
 
     if(isAllowedToEnterScene('delete_product_scene', ctx.message.chat.id.toString())){
-      await ctx.reply('переход на сцену delete_product_scene');
       await ctx.scene.enter('delete_product_scene')
-    }
+    }else ctx.reply('У вас нет прав перейти на эту сцену')
 
   }
+
+
+
+
 
   // @On('text')
   // async getMessage(

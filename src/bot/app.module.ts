@@ -15,6 +15,11 @@ import { EditProductScene } from './scenes/edit.scene';
 import { DeleteProductScene } from './scenes/delete.scene';
 import { InfoProductScene } from './scenes/info.scene';
 import { WebAppScene } from './scenes/webApp.scene';
+import { EditNameProductScene } from './scenes/scenes.func/edit_name.scene';
+import { EditPriceProductScene } from './scenes/scenes.func/edit_price.scene';
+import { EditCountProductScene } from './scenes/scenes.func/edit_count.scene';
+import { EditColorProductScene } from './scenes/scenes.func/edit_color.scene';
+import { EditVisibilityFalseProductScene, EditVisibilityProductScene, EditVisibilityTrueProductScene } from './scenes/scenes.func/edit_visibility.scene';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
 //TODO add .env
@@ -42,6 +47,13 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     EditProductScene,
     DeleteProductScene,
     InfoProductScene,
-    WebAppScene],
+    WebAppScene,
+    EditNameProductScene,
+    EditPriceProductScene,
+    EditCountProductScene,
+    EditColorProductScene,
+    EditVisibilityProductScene,
+    EditVisibilityFalseProductScene,
+    EditVisibilityTrueProductScene],
 })
 export class AppModule {}

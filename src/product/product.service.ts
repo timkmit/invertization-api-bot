@@ -87,7 +87,7 @@ export class ProductService {
       ...product,
       images: fileNames,
     };
-    // как по мне решение днищенское, но работает - значит, не трогаем
+    
     return this.prisma.product.create({
       data: {
         color: productToSave.color,
