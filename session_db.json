@@ -3,12 +3,17 @@
     {
       "id": "418777193:418777193",
       "data": {
-        "__scenes": {},
-        "type": "edit"
+        "__scenes": {
+          "current": "greeting_scene",
+          "state": {}
+        },
+        "type": "edit",
+        "productId": 1,
+        "product": {}
       }
     },
     {
-      "id": "942583043:942583043",
+      "id": "671159368:671159368",
       "data": {
         "__scenes": {}
       }
