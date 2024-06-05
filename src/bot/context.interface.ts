@@ -3,13 +3,14 @@ import { Context as ContextTelegraf, Scenes } from 'telegraf';
 
 export interface Context extends ContextTelegraf {
   session: {
-    type?: 'list' | 'category' | 'edit' | 'remove';
-    productID?: number
+    type?: string;
+    productID?: number;
+
   };
 }
 
 interface MySceneSessionData extends Scenes.SceneSessionData {
-  type?: 'category' | 'edit' | 'remove';
+  type?: string;
 }
 
 interface MySceneSession extends Scenes.SceneSession<MySceneSessionData> {
@@ -24,7 +25,9 @@ interface MySceneSession extends Scenes.SceneSession<MySceneSessionData> {
     visibility?: boolean;
     images?: string[];
     year?: number;
+    article_number?: string
   };
+  productPage: number
 }
 
 export interface Context2 extends Scenes.SceneContext<MySceneSessionData> {

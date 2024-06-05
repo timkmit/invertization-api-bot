@@ -8,22 +8,17 @@ import {
 import { Context, 
   Context2 } from './context.interface';
 import { isAllowedToEnterScene } from './app.utils';
-// import { PrismaService } from 'src/prisma.service';
-// import { CategoryService } from '../category/category.service';
-
 
 @Update()
 export class AppUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
-    // private readonly prisma: PrismaService,
-    // private readonly categoryService: CategoryService,
   ) {}
 
   @Start()
   @Command('scene')
   async onSceneCommand(ctx : Context2): Promise<void>{
-    await ctx.scene.enter('greeting_scene')
+    await ctx.scene.enter('apply_scene')
   }
 
   @Command('webapp_scene')
@@ -37,7 +32,7 @@ export class AppUpdate {
 
   @Command('info_product_scene')
   async onInfoSceneCommand(ctx : Context2): Promise<void>{
-    //TODO убрать вебапп отсюда и отовсюду
+
     if(isAllowedToEnterScene('info_product_scene', ctx.message.chat.id.toString())){
       ctx.session.type = 'edit';
       console.log(`Scene type set to: ${ctx.session.type}`);
@@ -72,33 +67,4 @@ export class AppUpdate {
     }else ctx.reply('У вас нет прав перейти на эту сцену')
 
   }
-
-
-
-
-
-  // @On('text')
-  // async getMessage(
-  //   @Message('text') message: string,
-  //   @Ctx() ctx: Context,
-  // ): Promise<Product | null> {
-  //   if (!ctx.session.type) return;
-  //   //TODO доделать утилс и нормально реализовать функции
-  //   //TODO добить редактирование
-  //   if (ctx.session.type === 'edit') {
-  //     const products = await this.prisma.product.findFirst({
-  //       where: { name: message },
-  //     });
-  //     if (!products) {
-  //       await ctx.reply('Товара с таким названием не найдено');
-  //       return;
-  //     }
-  //     await ctx.reply(
-  //       `Это нужный товар?\n\n-${products.name}\n-Цвет: ${products.color}\n-Цена: ${products.price}\n-Кол-во: ${products.count}\n-Продается: ${products.visibility ? `да` : `нет`} `,
-  //     );
-  //   }
-  //   //TODO сделать удаление (уже с бд)
-  //   if (ctx.session.type === 'remove') {
-  //   }
-  // }
 }

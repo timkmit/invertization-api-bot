@@ -3,8 +3,6 @@ export const showList = (goods) => {
   return categoryGood;
 };
 
-//const hashMapSceneNames: Record<string, Record<string, boolean>> = {};
-
 const hashMapSceneNames: Record<string, Record<string, boolean>> = {
   'webapp_scene': {'418777193': true, '671159368': true},
   'info_product_scene': {'418777193': true, '671159368': true},
@@ -16,8 +14,6 @@ const hashMapSceneNames: Record<string, Record<string, boolean>> = {
 export const isAllowedSceneNames = (hashMapSNs : object, sceneName : string) => {
   return sceneName in hashMapSNs;
 }
-
-
 
 export const isAllowedToEnterScene = (sceneName: string, userId: string) => {
 
