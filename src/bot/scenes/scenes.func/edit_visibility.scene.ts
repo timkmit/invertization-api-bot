@@ -18,8 +18,9 @@ export class EditVisibilityProductScene {
   }
 
   @SceneLeave()
-  async onSceneLeave(): Promise<void> {
+  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
     console.log('Leave from edit_product_visibility_scene');
+    await ctx.scene.enter('greeting_scene');
   }
 
   @Action('edit_visibility_true') 

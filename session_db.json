@@ -7,15 +7,9 @@
           "current": "greeting_scene",
           "state": {}
         },
-        "type": "edit",
-        "productId": 1,
-        "product": {}
-      }
-    },
-    {
-      "id": "671159368:671159368",
-      "data": {
-        "__scenes": {}
+        "product": {},
+        "type": "by_name",
+        "productPage": 1
       }
     }
   ]

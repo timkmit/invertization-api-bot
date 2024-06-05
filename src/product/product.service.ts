@@ -98,6 +98,7 @@ export class ProductService {
         images: fileNames,
         year: Number(productToSave.year),
         category: { connect: { id: Number(productToSave.category_id) } },
+        article_number: productToSave.article_number
       },
     });
   }
@@ -135,6 +136,7 @@ export class ProductService {
           year: getRandomInt(2000, 2024),
           category_id: getRandomInt(1, 4),
           images: ['generated.png'],
+          article_number: `Article ${i}`
         },
       });
     }

@@ -20,6 +20,7 @@ import { EditPriceProductScene } from './scenes/scenes.func/edit_price.scene';
 import { EditCountProductScene } from './scenes/scenes.func/edit_count.scene';
 import { EditColorProductScene } from './scenes/scenes.func/edit_color.scene';
 import { EditVisibilityFalseProductScene, EditVisibilityProductScene, EditVisibilityTrueProductScene } from './scenes/scenes.func/edit_visibility.scene';
+import { ApplyScene } from './scenes/apply.scene';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
 //TODO add .env
@@ -48,6 +49,7 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     DeleteProductScene,
     InfoProductScene,
     WebAppScene,
+    ApplyScene,
     EditNameProductScene,
     EditPriceProductScene,
     EditCountProductScene,

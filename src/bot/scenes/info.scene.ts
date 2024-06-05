@@ -1,7 +1,9 @@
+
 import { Scene, SceneEnter, SceneLeave, Hears, Ctx, Action } from 'nestjs-telegraf';
 import { Context2 } from '../context.interface';
 import { PrismaService } from 'src/prisma.service';
 import { CategoryService } from 'src/category/category.service';
+import { Markup } from 'telegraf';
 
 @Scene('info_product_scene')
 export class InfoProductScene {
@@ -9,7 +11,7 @@ export class InfoProductScene {
     private readonly prisma: PrismaService,
     private readonly categoryService: CategoryService,
   ) {}
-  
+
   @SceneEnter()
   async onSceneEnter(ctx: Context2): Promise<void> {
     console.log('Enter to info_product_scene');
@@ -18,7 +20,9 @@ export class InfoProductScene {
         inline_keyboard: [
           [{ text: 'Список товаров', callback_data: 'show_products' }],
           [{ text: 'Категории товаров', callback_data: 'show_categories' }],
-          [{ text: 'Вернуться', callback_data: 'show_outscene' }],
+          [{ text: 'Найти по артикулу', callback_data: 'search_by_article' }],
+          [{ text: 'Найти по названию', callback_data: 'search_by_name' }],
+          [{ text: 'Вернуться в главное меню', callback_data: 'back_to_menu' }],
         ],
       },
     });
@@ -43,14 +47,43 @@ export class InfoProductScene {
 
   @Action('show_products')
   async showProducts(ctx: Context2): Promise<void> {
-    const products = await this.prisma.product.findMany();
-    console.log(products);
+    ctx.session.productPage = 0;
+    await this.displayProducts(ctx);
+  }
 
-    const productsDetails = products.map((product, key) => {
-      return `${key}) ${product.name}\nЦвет: ${product.color}\nЦена: ${product.price}\nКоличество: ${product.count}\nПродается: ${product.visibility ? 'да' : 'нет'}\n`;
+  @Action('show_next_products')
+  async showNextProducts(ctx: Context2): Promise<void> {
+    ctx.session.productPage = (ctx.session.productPage || 0) + 1; 
+    await this.displayProducts(ctx);
+  }
+
+  async displayProducts(ctx: Context2): Promise<void> {
+    const page = ctx.session.productPage || 0;
+    const pageSize = 10;
+
+    const products = await this.prisma.product.findMany({
+      skip: page * pageSize,
+      take: pageSize,
     });
 
-    await ctx.reply(`${productsDetails.join('\n')}`);
+    if (products.length === 0) {
+      await ctx.reply('Товаров больше нет.');
+      ctx.session.productPage = 0;
+      return;
+    }
+
+    const productsDetails = products.map((product, key) => {
+      return `${key + 1 + page * pageSize}) ${product.name}\n🟢Цвет: ${product.color}\n🟢Цена: ${product.price}\n🟢Количество: ${product.count}\n🟢Продается: ${product.visibility ? 'да' : 'нет'}\n`;
+    });
+
+    await ctx.reply(`${productsDetails.join('\n')}`, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: 'Следующие', callback_data: 'show_next_products' }],
+          [{ text: 'Вернуться в главное меню', callback_data: 'back_to_menu' }]
+        ],
+      },
+    });
   }
 
   @Action('show_categories')
@@ -59,12 +92,117 @@ export class InfoProductScene {
 
     await ctx.reply(
       `Список категорий товаров:\n\n${categories.map(({ name }, i) => `${i + 1}) ${name}`).join('\n')}`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Вернуться в главное меню', callback_data: 'back_to_menu' }]
+          ],
+        },
+      }
     );
   }
 
-  @Action('show_outscene')
+  @Action('search_by_article')
+  async searchByArticle(ctx: Context2): Promise<void> {
+    await ctx.reply('Введите артикул товара:');
+    ctx.session.type = 'by_article';
+  }
+
+  @Action('search_by_name')
+  async searchByName(ctx: Context2): Promise<void> {
+    await ctx.reply('Введите часть названия товара:');
+    ctx.session.type = 'by_name';
+  }
+
+  @Hears(/.*/)
+  async onMessage(@Ctx() ctx: Context2): Promise<void> {
+    const message = ctx.message;
+    if (!('text' in message)) {
+      await ctx.reply('Пожалуйста, введите текстовое сообщение.');
+      return;
+    }
+    const text = message.text;
+    if (ctx.session.type === 'by_article') {
+      await this.findByArticle(ctx, text);
+    } else if (ctx.session.type === 'by_name') {
+      await this.findByName(ctx, text);
+    } else {
+      await ctx.reply('Неверная команда. Пожалуйста, используйте кнопки для навигации.');
+    }
+  }
+
+  async findByArticle(ctx: Context2, article: string): Promise<void> {
+    const product = await this.prisma.product.findFirst({
+      where: { article_number: article },
+    });
+
+    if (!product) {
+      await ctx.reply('Товар с таким артикулом не найден. Введите еще раз!',
+      Markup.inlineKeyboard([
+        Markup.button.callback('Вернуться в главное меню', 'back_to_menu')
+      ])
+      );
+      return;
+    }
+
+    const category = await this.prisma.category.findUnique({
+      where: { id: product.category_id },
+    });
+
+    const categoryName = category ? category.name : 'Неизвестно';
+
+    await ctx.reply(
+      `${product.name}\n` +
+      `🟢Цвет: ${product.color}\n` +
+      `🟢Цена: ${product.price}\n` +
+      `🟢Количество: ${product.count}\n` +
+      `🟢Продается: ${product.visibility ? 'да' : 'нет'}\n` +
+      `🟢Категория: ${categoryName}\n` +
+      `🟢Год выпуска: ${product.year}\n` +
+      `🟢Изображение: ${product.images.join(', ')}\n` +
+      `🟢Артикул: ${product.article_number}\n`,
+      Markup.inlineKeyboard([
+        Markup.button.callback('Найти еще товар', 'add_more'),
+        Markup.button.callback('Вернуться в главное меню', 'back_to_menu')
+      ])
+    );
+  }
+
+  async findByName(ctx: Context2, name: string): Promise<void> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (products.length === 0) {
+      await ctx.reply('Товары с таким названием не найдены. Введите название еще раз!');
+      return;
+    }
+
+    const productsDetails = products.map((product, key) => {
+      return `${key + 1}) ${product.name}\n🟢Цвет: ${product.color}\n🟢Цена: ${product.price}\n🟢Количество: ${product.count}\n🟢Продается: ${product.visibility ? 'да' : 'нет'}\n`;
+    });
+
+    await ctx.reply(`${productsDetails.join('\n')}`,       
+    Markup.inlineKeyboard([
+      Markup.button.callback('Найти еще товар', 'add_more'),
+      Markup.button.callback('Вернуться в главное меню', 'back_to_menu')
+    ]));
+  }
+
+  @Action('add_more')
+  async onAddMore(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.reenter();
+  }
+
+  @Action('back_to_menu')
   async onEditSceneCommand(ctx : Context2): Promise<void> {
-    ctx.scene.enter('greeting_scene')
+    ctx.session.productPage = 0;
+    await ctx.scene.enter('greeting_scene');
   }
 
   @Action('remove_product')
@@ -73,69 +211,3 @@ export class InfoProductScene {
     ctx.session.type = 'remove';
   }
 }
-
-
-
-
-
-// @Scene('info_product_scene')
-// export class InfoProductScene {
-//   constructor(
-//     private readonly prisma: PrismaService,
-//     private readonly categoryService: CategoryService,
-//   ) {}
-  
-//   @SceneEnter()
-//   onSceneEnter(): string {
-//     console.log('Enter to info_product_scene');
-//     return 'Welcome братишка info_product_scene';
-//   }
-
-//   @Hears('Список товаров')
-//   async getAll(ctx: Context) {
-//     const products = await this.prisma.product.findMany();
-//     console.log(products);
-
-//     const productsDetails = products.map((product, key) => {
-//       return `${key}) ${product.name}\nЦвет: ${product.color}\nЦена: ${product.price}\nКоличество: ${product.count}\nПродается: ${product.visibility ? 'да' : 'нет'}\n`;
-//     });
-
-//     await ctx.reply(`${productsDetails.join('\n')}`);
-//   }
-
-//   @Hears('Категории товаров')
-//   async getAllCategory(ctx: Context) {
-//     const categories = await this.categoryService.getAll();
-
-//     await ctx.reply(
-//       `Список категорий товаров:\n\n${categories.map(({ name }, i) => `${i + 1}) ${name}`).join('\n')}`,
-//     );
-//   }
-
-//   @Hears('Отредактировать')
-//   async onEditSceneCommand(ctx : Context2): Promise<void>{
-
-//     if(isAllowedToEnterScene('webapp_scene', ctx.message.chat.id.toString())){
-//       await ctx.reply('переход на сцену edit_product_scenee');
-//       await ctx.scene.enter('edit_product_scene')
-//     }else ctx.reply('У вас нет прав перейти на эту сцену')
-
-//   }
-
-//   @Hears('Удалить')
-//   async removeGood(ctx: Context) {
-//     await ctx.reply('Напиши название и цвет товара');
-//     ctx.session.type = 'remove';
-//   }
-
-//   @SceneLeave()
-//   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-//     console.log('Leave from scene');
-//     await ctx.scene.enter('greeting_scene');
-//   }
-
-//   @Hears('leave')
-//   async onLeaveCommand(ctx: Context2): Promise<void> {
-//     await ctx.scene.leave();
-//   }
-// }

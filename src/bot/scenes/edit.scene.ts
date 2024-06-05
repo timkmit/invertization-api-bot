@@ -161,13 +161,16 @@ export class EditProductScene {
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context2): Promise<void> {
     ctx.session.type = 'edit'
-    await ctx.reply('Введите название товара для редактирования:');
+    await ctx.reply('Введите название товара для редактирования:',
+    Markup.inlineKeyboard([
+      Markup.button.callback('Отменить редактирование', 'back_to_menu')
+    ])
+    );
   }
 
   @SceneLeave()
-  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
+  async onSceneLeave(): Promise<void> {
     console.log('Leave from edit_product_scene');
-    await ctx.scene.enter('greeting_scene');
   }
 
   @Hears('leave')
@@ -241,6 +244,11 @@ export class EditProductScene {
     await ctx.scene.enter('greeting_scene')
   }
 
+  @Action('back_to_menu')
+  async onBackToMenu(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.enter('greeting_scene');
+  }
+
   @On('text')
   async getMessage(@Message('text') message: string, @Ctx() ctx: Context2): Promise<void> {
 
@@ -276,6 +284,7 @@ export class EditProductScene {
       ctx.session.productId = product?.id;
       if (!product) {
         await ctx.reply('🔴Товара с таким названием не найдено');
+        await ctx.scene.reenter();
         return;
       }
       await ctx.reply(
