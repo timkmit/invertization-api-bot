@@ -31,13 +31,7 @@ export class ProductService {
     return new Set(products.map((product) => product.color));
   }
 
-  async getProductByDetails(
-    category_ids?: string,
-    colors?: string,
-    year?: string,
-    price?: string,
-    count?: string,
-  ) {
+  async getProductByDetails(category_ids?: string, colors?: string, year?: string, price?: string, count?: string) {
     const yearsData: { gte: number; lte: number } = {
       lte: year ? +year?.split('_')[1] : undefined,
       gte: year ? +year?.split('_')[0] : undefined,
@@ -56,6 +50,8 @@ export class ProductService {
     const idsData = category_ids ? JSON.parse(category_ids || '[]') : undefined;
 
     const colorsData = colors ? JSON.parse(colors || '[]') : undefined;
+
+    console.log(idsData, colorsData, countData, priceData, yearsData) 
 
     return this.prisma.product.findMany({
       where: {
@@ -78,16 +74,13 @@ export class ProductService {
     });
   }
 
-  async createProduct(
-    product: CreateProductDto,
-    files: Array<Express.Multer.File>,
-  ): Promise<Product> {
+  async createProduct(product: CreateProductDto, files: Array<Express.Multer.File>): Promise<Product> {
     const fileNames = this.imagesService.loadManyImages(files);
     const productToSave: CreateProductDto & { images: string[] } = {
       ...product,
       images: fileNames,
     };
-    
+
     return this.prisma.product.create({
       data: {
         color: productToSave.color,
@@ -98,15 +91,38 @@ export class ProductService {
         images: fileNames,
         year: Number(productToSave.year),
         category: { connect: { id: Number(productToSave.category_id) } },
-        article_number: productToSave.article_number
+        article_number: productToSave.article_number,
       },
     });
   }
 
-  async updateProduct(id: number, data: Product): Promise<Product> {
+  async updateProduct(id: number, data: Product & {is_images_changed: string}, files: Express.Multer.File[]): Promise<Product> {
+    const product = await this.prisma.product.findUnique({ where: { id: Number(id) } });
+    const newProduct: Omit<Product, 'id' | 'category_id'> = {
+      article_number: data.article_number,
+      color: data.color,
+      images: data.images,
+      name: data.name,
+      count: Number(data.count),
+      price: Number(data.price),
+      year: Number(data.year),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      visibility: Boolean((data.visibility as string) === 'true'),
+    };
+
+    if (data.is_images_changed) {
+      return this.prisma.product.update({
+        where: { id: Number(id) },
+        data: newProduct,
+      });
+    }
+    const images = this.imagesService.loadManyImages(files);
+    this.imagesService.deleteManyImages(product.images);
+
     return this.prisma.product.update({
       where: { id: Number(id) },
-      data: data,
+      data: { ...newProduct, images },
     });
   }
 
@@ -125,6 +141,10 @@ export class ProductService {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    for (let i = 0; i < 4; i++) {
+      await this.prisma.category.create({ data: { id: i + 1, name: 'Категория ' + (i + 1) } });
+    }
+
     for (let i = 0; i < generationNumber; i++) {
       await this.prisma.product.create({
         data: {
@@ -136,7 +156,7 @@ export class ProductService {
           year: getRandomInt(2000, 2024),
           category_id: getRandomInt(1, 4),
           images: ['generated.png'],
-          article_number: `Article ${i}`
+          article_number: `Article ${i}`,
         },
       });
     }

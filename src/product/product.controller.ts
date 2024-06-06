@@ -67,6 +67,7 @@ export class ProductController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() postData: CreateProductDto,
   ): Promise<Product> {
+    console.log(files)
     return this.productService.createProduct(postData, files);
   }
 
@@ -76,11 +77,13 @@ export class ProductController {
   }
 
   @Put('/:id')
+  @UseInterceptors(AnyFilesInterceptor())
   async updateProduct(
     @Param('id') id: number,
-    @Body() postData: Product,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() postData: Product & {is_images_changed: string},
   ): Promise<Product> {
-    return this.productService.updateProduct(id, postData);
+    return this.productService.updateProduct(id, postData, files);
   }
 
   @Get('/generate/:num')
