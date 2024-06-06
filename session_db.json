@@ -8,8 +8,29 @@
           "state": {}
         },
         "product": {},
-        "type": "by_name",
-        "productPage": 1
+        "type": "edit",
+        "productPage": 0
+      }
+    },
+    {
+      "id": "637920142:637920142",
+      "data": {
+        "__scenes": {
+          "current": "apply_scene",
+          "state": {}
+        }
+      }
+    },
+    {
+      "id": "671159368:671159368",
+      "data": {
+        "__scenes": {
+          "current": "info_product_scene",
+          "state": {}
+        },
+        "productPage": 0,
+        "type": "edit_visibility_true",
+        "productId": 13
       }
     }
   ]
