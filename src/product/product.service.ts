@@ -51,8 +51,6 @@ export class ProductService {
 
     const colorsData = colors ? JSON.parse(colors || '[]') : undefined;
 
-    console.log(idsData, colorsData, countData, priceData, yearsData) 
-
     return this.prisma.product.findMany({
       where: {
         category_id: { in: idsData },
@@ -66,8 +64,9 @@ export class ProductService {
     });
   }
 
-  getByNameId(query: string) {
+  getByNameId(query: string, take: number, page: number) {
     return this.prisma.product.findMany({
+      take: take * (page+1),
       where: {
         OR: [{ id: { equals: isNaN(Number(query)) ? 0 : Number(query) } }, { name: { contains: query } }],
       },
@@ -96,7 +95,11 @@ export class ProductService {
     });
   }
 
-  async updateProduct(id: number, data: Product & {is_images_changed: string}, files: Express.Multer.File[]): Promise<Product> {
+  async updateProduct(
+    id: number,
+    data: Product & { is_images_changed: string },
+    files: Express.Multer.File[],
+  ): Promise<Product> {
     const product = await this.prisma.product.findUnique({ where: { id: Number(id) } });
     const newProduct: Omit<Product, 'id' | 'category_id'> = {
       article_number: data.article_number,
@@ -127,10 +130,10 @@ export class ProductService {
   }
 
   async deleteProduct(id: number): Promise<Product> {
-    const product = await this.prisma.product.findUnique({ where: { id } });
+    const product = await this.prisma.product.findUnique({ where: { id: Number(id) } });
     this.imagesService.deleteManyImages(product.images);
     return this.prisma.product.delete({
-      where: { id: product.id },
+      where: { id: Number(product.id) },
     });
   }
 
