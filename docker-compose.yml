@@ -24,20 +24,13 @@ services:
       - db-data:/var/lib/postgresql/data
     restart: always
 
-  web_nginx:
+  nginx:
     image: nginx
-    hostname: web_nginx
-    container_name: web_nginx
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
     ports:
       - 80:80
       - 443:443
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./www_data:/usr/share/nginx/html
 
 volumes:
   db-data:
