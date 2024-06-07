@@ -12,7 +12,7 @@ export class GreetingScene {
       Markup.keyboard([
         ['🔎Найти товар', '✍️Изменить товар'], 
         ['✅Добавить товар', '❌Удалить товар'], 
-        ['Перейти в WebApp']
+        ['✅Добавить категорию','Перейти в WebApp']
       ]).resize()
     );
   }
@@ -30,6 +30,11 @@ export class GreetingScene {
   @Hears('✍️Изменить товар')
   async onEditProduct(@Ctx() ctx: Context2): Promise<void> {
       await ctx.scene.enter('edit_product_scene');
+  }
+
+  @Hears('✅Добавить категорию')
+  async onAddCategory(@Ctx() ctx: Context2): Promise<void> {
+      await ctx.scene.enter('add_category_scene');
   }
 
   @Hears('Перейти в WebApp')
