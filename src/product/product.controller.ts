@@ -1,17 +1,6 @@
 import { Product } from '@prisma/client';
 import { ProductService } from './product.service';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CreateProductDto } from './dto/CreateProductDto';
 
@@ -37,27 +26,19 @@ export class ProductController {
     @Query('price') price: string,
     @Query('count') count: string,
   ) {
-    return await this.productService.getProductByDetails(
-      category_ids,
-      colors,
-      years,
-      price,
-      count,
-    );
+    return await this.productService.getProductByDetails(category_ids, colors, years, price, count);
   }
 
-  @Get('/nameid') 
-  getProductByNameId (@Query('query') query: string) {
-    return this.productService.getByNameId(query)
+  @Get('/nameid')
+  getProductByNameId(@Query('query') query: string, @Query('page') page: string, @Query('take') take: string) {
+    return this.productService.getByNameId(query, Number(take), Number(page));
   }
 
   @Get('/color')
   async getColors(@Query('categories') categories: string) {
     const category_ids: number[] = JSON.parse(categories);
-    return {colors: Array.from( await this.productService.getColors(category_ids))};
+    return { colors: Array.from(await this.productService.getColors(category_ids)) };
   }
-
-  
 
   @Post()
   @UseInterceptors(AnyFilesInterceptor())
@@ -78,7 +59,7 @@ export class ProductController {
   async updateProduct(
     @Param('id') id: number,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body() postData: Product & {is_images_changed: string},
+    @Body() postData: Product & { is_images_changed: string },
   ): Promise<Product> {
     return this.productService.updateProduct(id, postData, files);
   }
