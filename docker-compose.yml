@@ -24,5 +24,15 @@ services:
       - db-data:/var/lib/postgresql/data
     restart: always
 
+  nginx:
+    depends_on:
+      - server
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
 volumes:
   db-data:
