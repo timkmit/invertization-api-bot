@@ -42,15 +42,15 @@ export class WebAppScene {
       Markup.keyboard([
         Markup.button.webApp(
           'Поиск по всем параметрам',
-          'https://subtle-chimera-51b2eb.netlify.app/search/process',
+          'https://main--webappbotinvertization.netlify.app/search/process',
         ),
         Markup.button.webApp(
           'Поиск по названию',
-          'https://subtle-chimera-51b2eb.netlify.app/search/byid',
+          'https://main--webappbotinvertization.netlify.app/search/byid',
         ),
         Markup.button.webApp(
           'Добавить товар',
-          'https://subtle-chimera-51b2eb.netlify.app/add',
+          'https://main--webappbotinvertization.netlify.app/add',
         )
       ]),
     );

@@ -21,6 +21,7 @@ import { EditCountProductScene } from './scenes/scenes.func/edit_count.scene';
 import { EditColorProductScene } from './scenes/scenes.func/edit_color.scene';
 import { EditVisibilityFalseProductScene, EditVisibilityProductScene, EditVisibilityTrueProductScene } from './scenes/scenes.func/edit_visibility.scene';
 import { ApplyScene } from './scenes/apply.scene';
+import { AddCategoryScene } from './scenes/addCategory.scene';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
 
@@ -45,6 +46,7 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     CategoryService, 
     GreetingScene,
     AddProductScene,
+    AddCategoryScene,
     EditProductScene,
     DeleteProductScene,
     InfoProductScene,
