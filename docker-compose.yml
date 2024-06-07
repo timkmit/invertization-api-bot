@@ -25,6 +25,8 @@ services:
     restart: always
 
   nginx:
+    depends_on:
+      - server
     image: nginx
     ports:
       - 80:80
