@@ -1,5 +1,5 @@
 
-import { Scene, SceneEnter, SceneLeave, Hears, Ctx, Action } from 'nestjs-telegraf';
+import { Scene, SceneEnter, Hears, Ctx, Action } from 'nestjs-telegraf';
 import { Context2 } from '../context.interface';
 import { PrismaService } from 'src/prisma.service';
 import { CategoryService } from 'src/category/category.service';
@@ -27,10 +27,6 @@ export class InfoProductScene {
     });
   }
 
-  @SceneLeave()
-  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    await ctx.scene.enter('greeting_scene');
-  }
 
   @Hears(['🔎Найти товар', '✍️Изменить товар', '✅Добавить товар', '❌Удалить товар'])
   async onInvalidCommand(@Ctx() ctx: Context2): Promise<void> {
