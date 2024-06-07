@@ -10,7 +10,6 @@ export class DeleteProductScene {
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Enter to delete_product_scene');
     await ctx.reply('Введите название товара, который хотите удалить:',
     Markup.inlineKeyboard([
       Markup.button.callback('Отменить удаление', 'back_to_menu')
@@ -37,7 +36,7 @@ export class DeleteProductScene {
       });
       await ctx.reply(`Товар "${text}" успешно удален.`,
       Markup.inlineKeyboard([
-        Markup.button.callback('Добавить еще', 'add_more'),
+        Markup.button.callback('Удалить еще', 'add_more'),
         Markup.button.callback('Вернуться в главное меню', 'back_to_menu')
       ])
       );
@@ -58,7 +57,7 @@ export class DeleteProductScene {
   }
 
   @SceneLeave()
-  async onSceneLeave(): Promise<void> {
-    console.log('Leave from delete scene');
+  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.leave();
   }
 }

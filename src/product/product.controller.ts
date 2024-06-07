@@ -15,7 +15,6 @@ export class ProductController {
 
   @Get('/get/:id')
   async getProduct(@Param('id') id: number): Promise<Product | null> {
-    console.log(id);
     return this.productService.getProduct(id);
   }
 
@@ -37,7 +36,6 @@ export class ProductController {
 
   @Get('/color')
   async getColors(@Query('categories') categories: string) {
-    console.log(categories);
     const category_ids: number[] = JSON.parse(categories);
     return { colors: Array.from(await this.productService.getColors(category_ids)) };
   }

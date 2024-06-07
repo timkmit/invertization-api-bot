@@ -13,10 +13,8 @@ export class EditNameProductScene {
 
   @SceneLeave()
   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Leave from edit_product_name_scene');
     ctx.session.type = ''; 
     ctx.session.productId = 999999;
-    await ctx.scene.enter('greeting_scene');
   }
 
   @On('text')
@@ -39,10 +37,9 @@ export class EditNameProductScene {
       });
       await ctx.reply(`Название товара успешно изменено на ${newProductName}`);
     } catch (error) {
-      console.error('Error updating product name:', error);
       await ctx.reply('Произошла ошибка при изменении названия товара');
     } finally {
-      await ctx.scene.leave();
+      await ctx.scene.enter('greeting_scene');
     }
   }
 }

@@ -32,22 +32,14 @@ export const isAllowedSceneNames = (hashMapSNs: object, sceneName: string) => {
 };
 
 export const isAllowedToEnterScene = (sceneName: string, userId: string) => {
-  console.log('пользователь зашел в функцию проверки сцены и пользователя');
 
   Object.keys(hashMapSceneNames).forEach((key) => {
     hashMapSceneNames[key] = { ...hashMapSceneNames[key] } as Record<string, boolean>;
   });
-
   if (sceneName in hashMapSceneNames) {
-    console.log('первая проверка в хеш мапе пройдена');
-    console.log(sceneName in hashMapSceneNames);
-
     if (userId in hashMapSceneNames[sceneName]) {
-      console.log('вторая проверка в хеш мапе пройдена');
-      console.log(hashMapSceneNames[sceneName][userId]);
       return hashMapSceneNames[sceneName][userId];
-    } else console.log('вторая проверка в хеш мапе не пройдена');
-  } else console.log('первая проверка в хеш мапе не пройдена');
-
+    } 
+  } 
   return false;
 };

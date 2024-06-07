@@ -21,7 +21,6 @@ export class ImagesService {
           file.buffer,
         );
       } catch (e) {
-        console.error(e);
       }
     }
 
@@ -33,7 +32,6 @@ export class ImagesService {
       try {
         fs.unlinkSync(join(__dirname, '../../public', fileNames[i]));
       } catch (e) {
-        console.log(e);
       }
     }
   }

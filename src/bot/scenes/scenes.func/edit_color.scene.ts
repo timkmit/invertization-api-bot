@@ -13,10 +13,8 @@ export class EditColorProductScene {
 
   @SceneLeave()
   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Leave from edit_product_color_scene');
     ctx.session.type = ''; 
     ctx.session.productId = 999999;
-    await ctx.scene.enter('greeting_scene');
   }
 
   @On('text')
@@ -39,10 +37,9 @@ export class EditColorProductScene {
       });
       await ctx.reply(`Цвет товара успешно изменен на ${newProductColor}`);
     } catch (error) {
-      console.error('Error updating product color:', error);
       await ctx.reply('Произошла ошибка при изменении цвета товара');
     } finally {
-      await ctx.scene.leave();
+      await ctx.scene.enter('greeting_scene');
     }
   }
 }

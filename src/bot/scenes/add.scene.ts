@@ -1,7 +1,6 @@
 import { Scene, SceneEnter, SceneLeave, Hears, Ctx, Action } from 'nestjs-telegraf';
 import { Context2 } from '../context.interface';
 import { PrismaService } from 'src/prisma.service';
-import { CategoryService } from 'src/category/category.service';
 import { Markup } from 'telegraf';
 
 
@@ -9,12 +8,11 @@ import { Markup } from 'telegraf';
 export class AddProductScene {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly categoryService: CategoryService,
   ) {}
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Enter to add_product_scene');
+
     await ctx.reply('Введите название товара:',
     Markup.inlineKeyboard([
       Markup.button.callback('Отменить создание товара', 'back_to_menu')
@@ -145,9 +143,9 @@ export class AddProductScene {
     await ctx.scene.enter('greeting_scene');
   }
 
-  @SceneLeave()
-  async onSceneLeave(): Promise<void> {
-    console.log('Leave from add_product_scene');
+  @SceneLeave() 
+  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.leave()
   }
 
 }

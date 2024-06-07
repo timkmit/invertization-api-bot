@@ -13,10 +13,8 @@ export class EditPriceProductScene {
 
   @SceneLeave()
   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Leave from edit_product_price_scene');
     ctx.session.type = ''; 
     ctx.session.productId = undefined;
-    await ctx.scene.enter('greeting_scene');
   }
 
   @On('text')
@@ -24,10 +22,8 @@ export class EditPriceProductScene {
     @Message() message: any,
     @Ctx() ctx: Context2
   ): Promise<void> {
-    console.log('Full message object:', message);
 
     const text = message.text;
-    console.log('Received message:', text);
 
     if (!text) {
       await ctx.reply('Пожалуйста, введите действительное положительное число для цены.');
@@ -36,8 +32,6 @@ export class EditPriceProductScene {
 
     const newProductPrice = parseInt(text, 10);
     const productId = ctx.session.productId;
-
-    console.log('Parsed price:', newProductPrice);
 
     if (isNaN(newProductPrice) || newProductPrice <= 0) {
       await ctx.reply('Пожалуйста, введите действительное положительное число для цены.');
@@ -56,10 +50,9 @@ export class EditPriceProductScene {
       });
       await ctx.reply(`Цена товара успешно изменена на ${newProductPrice}`);
     } catch (error) {
-      console.error('Error updating product price:', error);
       await ctx.reply('Произошла ошибка при изменении цены товара');
     } finally {
-      await ctx.scene.leave();
+      await ctx.scene.enter('greeting_scene');
     }
   }
 }

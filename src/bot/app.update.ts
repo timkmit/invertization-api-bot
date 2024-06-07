@@ -35,7 +35,6 @@ export class AppUpdate {
 
     if(isAllowedToEnterScene('info_product_scene', ctx.message.chat.id.toString())){
       ctx.session.type = 'edit';
-      console.log(`Scene type set to: ${ctx.session.type}`);
       await ctx.scene.enter('info_product_scene')
     }else ctx.reply('У вас нет прав перейти на эту сцену')
   }

@@ -23,7 +23,7 @@ import { EditVisibilityFalseProductScene, EditVisibilityProductScene, EditVisibi
 import { ApplyScene } from './scenes/apply.scene';
 
 const sessions = new LocalSession({ database: 'session_db.json' });
-//TODO add .env
+
 @Module({
   imports: [
     TelegrafModule.forRoot({
