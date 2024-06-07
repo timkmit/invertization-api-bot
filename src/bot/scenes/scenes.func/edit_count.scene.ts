@@ -13,10 +13,8 @@ export class EditCountProductScene {
 
   @SceneLeave()
   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Leave from edit_product_count_scene');
     ctx.session.type = ''; 
     ctx.session.productId = undefined;
-    await ctx.scene.enter('greeting_scene');
   }
 
   @On('text')
@@ -24,11 +22,7 @@ export class EditCountProductScene {
     @Message() message: any,
     @Ctx() ctx: Context2
   ): Promise<void> {
-    console.log('Full message object:', message);
-
     const text = message.text;
-    console.log('Received message:', text);
-
     if (!text) {
       await ctx.reply('Пожалуйста, введите действительное положительное число для количества.');
       return;
@@ -36,8 +30,6 @@ export class EditCountProductScene {
 
     const newProductCount = parseInt(text, 10);
     const productId = ctx.session.productId;
-
-    console.log('Parsed count:', newProductCount);
 
     if (isNaN(newProductCount) || newProductCount < 0) {
       await ctx.reply('Пожалуйста, введите действительное положительное число для количества.');
@@ -56,10 +48,9 @@ export class EditCountProductScene {
       });
       await ctx.reply(`Количество товара успешно изменено на ${newProductCount}`);
     } catch (error) {
-      console.error('Error updating product count:', error);
       await ctx.reply('Произошла ошибка при изменении количества товара');
     } finally {
-      await ctx.scene.leave();
+      await ctx.scene.enter('greeting_scene');
     }
   }
 }

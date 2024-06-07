@@ -51,8 +51,6 @@ export class ProductService {
 
     const colorsData = colors ? JSON.parse(colors || '[]') : undefined;
 
-    console.log(idsData, colorsData, countData, priceData, yearsData) 
-
     return this.prisma.product.findMany({
       where: {
         category_id: { in: idsData },

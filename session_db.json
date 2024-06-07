@@ -4,11 +4,11 @@
       "id": "418777193:418777193",
       "data": {
         "__scenes": {
-          "current": "webapp_scene",
+          "current": "greeting_scene",
           "state": {}
         },
         "product": {},
-        "type": "by_name",
+        "type": "edit",
         "productPage": 0
       }
     },
@@ -19,6 +19,12 @@
           "current": "apply_scene",
           "state": {}
         }
+      }
+    },
+    {
+      "id": "942583043:942583043",
+      "data": {
+        "__scenes": {}
       }
     }
   ]

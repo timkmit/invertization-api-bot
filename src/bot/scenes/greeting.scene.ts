@@ -7,12 +7,12 @@ import { Markup } from 'telegraf';
 export class GreetingScene {
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Enter to greetingscene');
     await ctx.reply(
       'Главное меню, выберите необходимое действие:',
       Markup.keyboard([
         ['🔎Найти товар', '✍️Изменить товар'], 
         ['✅Добавить товар', '❌Удалить товар'], 
+        ['Перейти в WebApp']
       ]).resize()
     );
   }
@@ -23,13 +23,18 @@ export class GreetingScene {
   }
 
   @SceneLeave()
-  async onSceneLeave(): Promise<void> {
-    console.log('Out of greeting scene')
+  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.leave();
   }
 
   @Hears('✍️Изменить товар')
   async onEditProduct(@Ctx() ctx: Context2): Promise<void> {
       await ctx.scene.enter('edit_product_scene');
+  }
+
+  @Hears('Перейти в WebApp')
+  async onWebApp(@Ctx() ctx: Context2): Promise<void> {
+      await ctx.scene.enter('webapp_scene');
   }
 
   @Hears('✅Добавить товар')

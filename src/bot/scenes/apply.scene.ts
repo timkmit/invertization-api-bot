@@ -7,7 +7,6 @@ import { isAllowedToEnterScene } from '../app.utils';
 export class ApplyScene {
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Enter to apply_scene');
     await ctx.reply(
       'Привет! Это бот-помощник в твоей инвертизации! Чтобы начать работу, нажми на кнопку ниже',
       Markup.inlineKeyboard([
@@ -17,8 +16,8 @@ export class ApplyScene {
   }
 
   @SceneLeave()
-  async onSceneLeave(): Promise<void> {
-    console.log('Leave from apply_scene');
+  async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
+    await ctx.scene.leave();
   }
 
   @Action('start_work')

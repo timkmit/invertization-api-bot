@@ -14,7 +14,6 @@ export class InfoProductScene {
 
   @SceneEnter()
   async onSceneEnter(ctx: Context2): Promise<void> {
-    console.log('Enter to info_product_scene');
     await ctx.reply('🟢Необходимое действие:', {
       reply_markup: {
         inline_keyboard: [
@@ -30,8 +29,7 @@ export class InfoProductScene {
 
   @SceneLeave()
   async onSceneLeave(@Ctx() ctx: Context2): Promise<void> {
-    console.log('Leave from scene info');
-    await ctx.scene.leave();
+    await ctx.scene.enter('greeting_scene');
   }
 
   @Hears(['🔎Найти товар', '✍️Изменить товар', '✅Добавить товар', '❌Удалить товар'])
@@ -73,7 +71,7 @@ export class InfoProductScene {
     }
 
     const productsDetails = products.map((product, key) => {
-      return `${key + 1 + page * pageSize}) ${product.name}\n🟢Цвет: ${product.color}\n🟢Цена: ${product.price}\n🟢Количество: ${product.count}\n🟢Продается: ${product.visibility ? 'да' : 'нет'}\n`;
+      return `${key + 1 + page * pageSize}) ${product.name}\n🟢Цвет: ${product.color}\n🟢Цена: ${product.price}\n🟢Артикул: ${product.article_number}\n🟢Количество: ${product.count}\n🟢Продается: ${product.visibility ? 'да' : 'нет'}\n`;
     });
 
     await ctx.reply(`${productsDetails.join('\n')}`, {
@@ -159,7 +157,6 @@ export class InfoProductScene {
       `🟢Продается: ${product.visibility ? 'да' : 'нет'}\n` +
       `🟢Категория: ${categoryName}\n` +
       `🟢Год выпуска: ${product.year}\n` +
-      `🟢Изображение: ${product.images.join(', ')}\n` +
       `🟢Артикул: ${product.article_number}\n`,
       Markup.inlineKeyboard([
         Markup.button.callback('Найти еще товар', 'add_more'),
