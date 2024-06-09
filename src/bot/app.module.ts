@@ -14,7 +14,6 @@ import { AddProductScene } from './scenes/add.scene';
 import { EditProductScene } from './scenes/edit.scene';
 import { DeleteProductScene } from './scenes/delete.scene';
 import { InfoProductScene } from './scenes/info.scene';
-import { WebAppScene } from './scenes/webApp.scene';
 import { EditNameProductScene } from './scenes/scenes.func/edit_name.scene';
 import { EditPriceProductScene } from './scenes/scenes.func/edit_price.scene';
 import { EditCountProductScene } from './scenes/scenes.func/edit_count.scene';
@@ -50,7 +49,6 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     EditProductScene,
     DeleteProductScene,
     InfoProductScene,
-    WebAppScene,
     ApplyScene,
     EditNameProductScene,
     EditPriceProductScene,
