@@ -9,6 +9,8 @@ services:
       - db
     env_file:
       - .env
+    volumes:
+      - public-data:/app/public
     restart: always
 
   db:
