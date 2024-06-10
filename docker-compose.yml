@@ -12,6 +12,7 @@ services:
     volumes:
       - public-data:/app/public
     restart: always
+    command: ["sh", "-c", "npx prisma migrate deploy && npm start"]
 
   db:
     image: postgres:13
